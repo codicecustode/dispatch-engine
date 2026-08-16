@@ -7,14 +7,22 @@ import { LocationService } from "./location/locationService.ts";
 import { DriverState } from "./driver/driverStates.ts";
 import { DRIVER_AVAILABLE, DRIVER_LOCATION_UPDATE } from "./constants/driver.ts";
 dotenv.config();
+import {orderRoute} from '../src/order/order.routes.ts'
 
 const app = fastify({
     logger: true
 })
 
-const server = createServer(app.server);
+app.register(orderRoute as any)
+app.get('/health', async(_, reply)=>{
+    reply.send({
+        message:"ok hai"
+    })
+})
 
-const io = new Server(server);
+
+
+const io = new Server(app.server);
 
 await initRedis();
 
@@ -49,4 +57,7 @@ io.on("connection", (socket) => {
     });
 })
 
-io.listen(3001)
+await app.listen({
+    port: 3001,
+    host: "0.0.0.0"
+});
