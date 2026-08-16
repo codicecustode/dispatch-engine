@@ -43,6 +43,10 @@ for (let i = 1; i <= 100; i++) {
 
     const driverId = `DRIVER-${i}`;
 
+    socket.emit('DRIVER_AVAILABLE', {
+        driverId
+    })
+
     // Each driver gets a fixed starting area
     const baseLocation = getBaseLocation(i);
 
@@ -53,6 +57,8 @@ for (let i = 1; i <= 100; i++) {
     socket.on("connect", () => {
         console.info(`${driverId} connected`);
     });
+
+
 
     const emitLocation = () => {
 
