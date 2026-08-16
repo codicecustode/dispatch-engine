@@ -1,7 +1,7 @@
 
 import { DriverState } from './driverStates.ts'
 import { client } from '../redis/redis.config.ts'
-class FindAvailableDriver {
+export class FindAvailableDriver {
     static filterAvailableDriver(drivers: {
         member: string;
         distance?: number;

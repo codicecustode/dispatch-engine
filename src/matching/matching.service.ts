@@ -6,11 +6,11 @@ await initRedis()
 
 export class MatchingRiderService {
 
-    static async findNearByDrivers(client: RedisClientType, lat: number, lag: number, radiusKm: number = 3) {
+    static async findNearByDrivers(client: RedisClientType, lat: number, lng: number, radiusKm: number = 3) {
 
         return await client.geoSearchWith(
             'DRIVER_LOCATION',
-            { longitude: lag, latitude: lat },
+            { longitude: lng, latitude: lat },
             { radius: radiusKm, unit: 'km' },
             ['WITHDIST', 'WITHCOORD'],
             {

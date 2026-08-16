@@ -7,22 +7,22 @@ import { LocationService } from "./location/locationService.ts";
 import { DriverState } from "./driver/driverStates.ts";
 import { DRIVER_AVAILABLE, DRIVER_LOCATION_UPDATE } from "./constants/driver.ts";
 dotenv.config();
-import {orderRoute} from '../src/order/order.routes.ts'
+import { orderRoute } from '../src/order/order.routes.ts'
 
 const app = fastify({
     logger: true
 })
 
 app.register(orderRoute as any)
-app.get('/health', async(_, reply)=>{
+app.get('/health', async (_, reply) => {
     reply.send({
-        message:"ok hai"
+        message: "ok hai"
     })
 })
 
 
 
-const io = new Server(app.server);
+export const io = new Server(app.server);
 
 await initRedis();
 
@@ -31,11 +31,15 @@ io.on("connection", (socket) => {
 
     let driverId: string | null = null;
 
-    socket.on(DRIVER_AVAILABLE, (data) => {
+    socket.on(DRIVER_AVAILABLE, async (data) => {
 
         driverId = data.driverId
 
         DriverState.markDriverStateAvailable(client, String(driverId))
+
+        await client.set(`driver:available:${driverId}`,
+            socket.id
+        )
 
     });
 

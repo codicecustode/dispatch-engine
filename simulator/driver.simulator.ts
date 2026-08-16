@@ -69,7 +69,7 @@ for (let i = 1; i <= 100; i++) {
         const driverData = {
             driverId,
             lat: currentLat,
-            lag: currentLng,
+            lng: currentLng,
         };
 
         socket.emit(

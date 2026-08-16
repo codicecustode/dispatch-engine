@@ -7,9 +7,9 @@ export class LocationService {
         this.client = client;
     }
 
-    static updateDriverLocation(client: RedisClientType, lat: number, lag: number, driverId: string) {
+    static updateDriverLocation(client: RedisClientType, lat: number, lng: number, driverId: string) {
         client.geoAdd("driver:locations", {
-            longitude: lag,
+            longitude: lng,
             latitude: lat,
             member: driverId
         });
