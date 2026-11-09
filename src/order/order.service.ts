@@ -27,7 +27,11 @@ export const createOrderService = async (
     const drivers = await MatchingRiderService.findNearByDrivers(client, order.pickup.lat, order.pickup.lng)
     const availableDrivers = await FindAvailableDriver.filterAvailableDriver(drivers)
     const nearestDrivers = await FindAvailableDriver.filterNearestDriver(availableDrivers)
-    await sendOfferTodriver(nearestDrivers[0]?.member!, order.orderId, io)
+    const nearestDriver = nearestDrivers[0]
+
+    if (nearestDriver) {
+        await sendOfferTodriver(nearestDriver.member, order.orderId, io)
+    }
 
     return order;
 };
