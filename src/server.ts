@@ -5,7 +5,7 @@ import { client, initRedis } from "./redis/redis.config.ts"
 import dotenv from "dotenv"
 import { LocationService } from "./location/locationService.ts";
 import { DriverState } from "./driver/driverStates.ts";
-import { DRIVER_AVAILABLE, DRIVER_LOCATION_UPDATE } from "./constants/driver.ts";
+import { DRIVER_AVAILABLE_EVENT, DRIVER_LOCATION_UPDATE } from "./constants/driver.ts";
 dotenv.config();
 import { orderRoute } from '../src/order/order.routes.ts'
 
@@ -27,11 +27,10 @@ export const io = new Server(app.server);
 await initRedis();
 
 io.on("connection", (socket) => {
-    console.log(socket)
 
     let driverId: string | null = null;
 
-    socket.on(DRIVER_AVAILABLE, async (data) => {
+    socket.on(DRIVER_AVAILABLE_EVENT, async (data) => {
 
         driverId = data.driverId
 
@@ -43,13 +42,17 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on("DRIVER_LOCATION_UPDATE", (locationData) => {
+    socket.on(DRIVER_LOCATION_UPDATE, (locationData) => {
 
-        console.log("Location received:", locationData);
+        const { lat, lng, driverId } = locationData ?? {};
 
-        const { lag, lat, driverId } = locationData;
+        // Ignore malformed updates instead of letting one bad message crash the server
+        if (typeof lat !== "number" || typeof lng !== "number" || !driverId) {
+            console.warn("Ignoring invalid location update:", locationData);
+            return;
+        }
 
-        LocationService.updateDriverLocation(client, lat, lag, driverId)
+        LocationService.updateDriverLocation(client, lat, lng, driverId)
 
     });
 
