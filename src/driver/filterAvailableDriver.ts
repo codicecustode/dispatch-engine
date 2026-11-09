@@ -2,7 +2,7 @@
 import { DriverState } from './driverStates.ts'
 import { client } from '../redis/redis.config.ts'
 export class FindAvailableDriver {
-    static filterAvailableDriver(drivers: {
+    static async filterAvailableDriver(drivers: {
         member: string;
         distance?: number;
         hash?: number;
@@ -12,7 +12,11 @@ export class FindAvailableDriver {
         };
     }[]) {
 
-        return drivers.filter(driver => DriverState.isDriverAvailable(client, driver.member))
+        const availability = await Promise.all(
+            drivers.map(driver => DriverState.isDriverAvailable(client, driver.member))
+        )
+
+        return drivers.filter((_, index) => availability[index])
 
     }
 
