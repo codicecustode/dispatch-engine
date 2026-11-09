@@ -1,15 +1,12 @@
 import type { RedisClientType } from "redis";
-import { client, initRedis } from '../redis/redis.config.ts'
-import dotenv from 'dotenv'
-dotenv.config()
-await initRedis()
+import { DRIVER_LOCATIONS } from '../constants/driver.ts'
 
 export class MatchingRiderService {
 
     static async findNearByDrivers(client: RedisClientType, lat: number, lng: number, radiusKm: number = 3) {
 
         return await client.geoSearchWith(
-            'DRIVER_LOCATION',
+            DRIVER_LOCATIONS,
             { longitude: lng, latitude: lat },
             { radius: radiusKm, unit: 'km' },
             ['WITHDIST', 'WITHCOORD'],
@@ -19,11 +16,3 @@ export class MatchingRiderService {
         );
     }
 }
-
-
-console.log(await MatchingRiderService.findNearByDrivers(
-    client,
-    28.6139,
-    77.2090,
-    3
-))
