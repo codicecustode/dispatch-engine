@@ -58,6 +58,10 @@ for (let i = 1; i <= 100; i++) {
         console.info(`${driverId} connected`);
     });
 
+    socket.on("ORDER_OFFER", (offer) => {
+        console.info(`${driverId} received offer:`, offer);
+    });
+
 
 
     const emitLocation = () => {
@@ -74,11 +78,6 @@ for (let i = 1; i <= 100; i++) {
 
         socket.emit(
             "DRIVER_LOCATION_UPDATE",
-            driverData
-        );
-
-        console.info(
-            "Sending location:",
             driverData
         );
     };
